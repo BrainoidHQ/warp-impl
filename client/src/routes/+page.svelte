@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { WT } from '$lib/wt';
+  const wt = new WT('https://example.com:4999/wt');
 </script>
 
 <svelte:head>
 	<title>Home</title>
-	<!-- <meta name="description" content="Svelte demo app" /> -->
+	<meta name="description" content="Warp Implementation" />
 </svelte:head>
 
 <section>

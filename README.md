@@ -1,38 +1,26 @@
-# create-svelte
-
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
+# Warp Impl
+## Server
+- Generate certificate stuff as TLS is required on QUIC Connection
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+#at the root dir
+cd ./cert
+mkcert -cert-file certificate.pem -key-file certificate.key localhost 127.0.0.1 ::1
+openssl x509 -pubkey -noout -in "certificate.pem" |
+	openssl rsa -pubin -outform der 2>/dev/null |
+	openssl dgst -sha256 -binary |
+	base64
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
+- Start up
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+#at the root dir
+python main.py ../cert/certificate.pem ../cert/certificate.key
 ```
 
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
+## Client
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+#at the root dir
+cd ./client
+yarn install
+yarn dev
+```
