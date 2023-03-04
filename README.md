@@ -14,7 +14,7 @@ openssl x509 -pubkey -noout -in "certificate.pem" |
 - Start up
 ```bash
 #at the root dir
-python main.py ../cert/certificate.pem ../cert/certificate.key
+python ./server/main.py ./cert/certificate.pem ./cert/certificate.key
 ```
 
 ## Client
