@@ -19,20 +19,21 @@ class ConnectionHandler:
     if isinstance(event, DatagramReceived):
       print("Datagram: {}".format(event.data.decode(encoding = "utf-8")))
       self._http.send_datagram(self._session_id, event.data)
-      self._http._quic.send_datagram_frame(event.data)
     elif isinstance(event, WebTransportStreamDataReceived):
-      print("Stream Data Received")
+      self._texts[event.stream_id] += event.data
       if not event.stream_ended:
         return
+      if event.stream_id not in self._texts:
+        print("Stream has ended but no payload has been found. Terminating")
+        return
+      payload = self._texts[event.stream_id]
       if stream_is_unidirectional(event.stream_id):
-        print("Undirectional Stream: {}".format(event.data.decode("utf-8")))
-        # Create counter stream with the same session id
+        print("Undirectional Stream: {}".format(payload.decode("utf-8")))
         res = self._http.create_webtransport_stream(event.session_id, is_unidirectional = True)
       else:
-        print("Bidirectional Stream: {}".format(event.data.decode("utf-8")))
-        # Create new stream with the same stream id (its session id is gonna be different)
+        print("Bidirectional Stream: {}".format(payload.decode("utf-8")))
         res = event.stream_id
-      self._http._quic.send_stream_data(res, event.data, end_stream = True)
-      self.stream_closed(event.session_id)
+      self._http._quic.send_stream_data(res, payload, end_stream = True)
+      self.stream_closed(event.stream_id) #Delete corresponding payload (temporarily for echo server)
 
 

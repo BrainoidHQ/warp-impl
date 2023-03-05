@@ -1,6 +1,6 @@
 <script lang="ts">
   import { WT } from '$lib/wt';
-  const wt = new WT('https://example.com:4999/wt');
+  const wt = new WT('https://localhost:4433');
 </script>
 
 <svelte:head>
