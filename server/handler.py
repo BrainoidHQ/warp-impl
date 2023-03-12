@@ -15,25 +15,25 @@ class ConnectionHandler:
       print("Cannot delete {}".format(stream_id))
       pass
   def event_received(self, event: H3Event) -> None:
-    print(event)
     if isinstance(event, DatagramReceived):
       print("Datagram: {}".format(event.data.decode(encoding = "utf-8")))
       self._http.send_datagram(self._session_id, event.data)
     elif isinstance(event, WebTransportStreamDataReceived):
       self._texts[event.stream_id] += event.data
-      if not event.stream_ended:
-        return
-      if event.stream_id not in self._texts:
-        print("Stream has ended but no payload has been found. Terminating")
-        return
+      # if event.stream_id not in self._texts:
+      #   print("Stream has ended but no payload has been found. Terminating")
+      #   return
       payload = self._texts[event.stream_id]
       if stream_is_unidirectional(event.stream_id):
-        print("Undirectional Stream: {}".format(payload.decode("utf-8")))
-        res = self._http.create_webtransport_stream(event.session_id, is_unidirectional = True)
+        self.unidirectional_stream_received(event, payload)
       else:
-        print("Bidirectional Stream: {}".format(payload.decode("utf-8")))
-        res = event.stream_id
-      self._http._quic.send_stream_data(res, payload, end_stream = True)
-      self.stream_closed(event.stream_id) #Delete corresponding payload (temporarily for echo server)
-
-
+        self.bidirectional_stream_received(event, payload)
+  def unidirectional_stream_received(self, event, payload) -> None:
+    print("Undirectional Stream: {}".format(payload.decode("utf-8")))
+    res = self._http.create_webtransport_stream(event.session_id, is_unidirectional = True)
+    self._http._quic.send_stream_data(res, payload, end_stream = True)
+    self.stream_closed(event.stream_id) #Delete corresponding payload (temporarily for echo server)
+  def bidirectional_stream_received(self, event, payload) -> None:
+    print("Bidirectional Stream: {}".format(payload.decode("utf-8")))
+    res = event.stream_id
+    self._http._quic.send_stream_data(res, payload, end_stream = False)
