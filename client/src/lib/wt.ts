@@ -1,11 +1,10 @@
 import { receivedStore, ObjectListStore } from './store';
 
 export class WT {
-  private wt;
+  private wt: WebTransport;
   private store: ObjectListStore<string>;
-  private datagram: { reader, writer };
-  private unidirectionalStream: { reader, writer };
-  private bidirectionalStream: { reader, writer };
+  private datagram: { reader: ReadableStreamDefaultReader, writer: WritableStreamDefaultWriter };
+  private bidirectionalStream: { reader: ReadableStreamDefaultReader, writer: WritableStreamDefaultWriter };
   private static Encoder = new TextEncoder();
   private static Decoder = new TextDecoder();
   constructor(url: string) {
@@ -65,20 +64,21 @@ export class WT {
     const bin = WT.Encoder.encode(message);
     writer.write(bin);
   }
-  async readUnidirectionalStream() {
+  async readUnidirectionalStream(callback) {
     const readerIncoming = await this.wt.incomingUnidirectionalStreams.getReader();
     while (true) {
       const { value, done } = await readerIncoming.read();
       if (done) break;
-      await this.readReceiveStream(value);
+      await this.readReceiveStream(value, callback);
     }
   }
-  private async readReceiveStream(stream) {
+  private async readReceiveStream(stream, callback: (val: Uint8Array) => unknown) {
     const reader = stream.getReader();
     while (true) {
       const { value, done } = await reader.read();
       if (done) break;
       this.store.push(WT.Decoder.decode(value));
+      callback(value);
     }
   }
 }

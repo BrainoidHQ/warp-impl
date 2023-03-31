@@ -30,10 +30,13 @@ class ConnectionHandler:
         self.bidirectional_stream_received(event, payload)
   def unidirectional_stream_received(self, event, payload) -> None:
     print("Undirectional Stream: {}".format(payload.decode("utf-8")))
-    res = self._http.create_webtransport_stream(event.session_id, is_unidirectional = True)
-    self._http._quic.send_stream_data(res, payload, end_stream = True)
-    self.stream_closed(event.stream_id) #Delete corresponding payload (temporarily for echo server)
+    print(event.session_id)
+    self.send_unidirectional_stream(payload)
+    self.stream_closed(event.stream_id) #Deletes corresponding payload (temporarily for echo server)
   def bidirectional_stream_received(self, event, payload) -> None:
     print("Bidirectional Stream: {}".format(payload.decode("utf-8")))
     res = event.stream_id
     self._http._quic.send_stream_data(res, payload, end_stream = False)
+  def send_unidirectional_stream(self, payload) -> None:
+    stream = self._http.create_webtransport_stream(self._session_id, is_unidirectional = True)
+    self._http._quic.send_stream_data(stream, payload, end_stream = True)

@@ -49,6 +49,7 @@ class WT(QuicConnectionProtocol):
       headers = self._encode_header(200)
       headers.append((b"sec-webtransport-http3-draft", b"draft02"))
       self._http.send_headers(stream_id, headers, False)
+      print("Connection Established: {}".format(stream_id))
       return
     self._http.send_headers(stream_id, self._encode_header(404), True)
   def _encode_header(self, status_code: int) -> list[tuple[Literal, bytes]]:

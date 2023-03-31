@@ -8,5 +8,6 @@ export class Warp {
   }
   async init() {
     await this.wt.setup();
+    this.wt.writeUnidirectionalStream('Hello');
   }
 }

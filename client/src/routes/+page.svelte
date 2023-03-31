@@ -1,7 +1,10 @@
 <script lang="ts">
   import { receivedStore } from '$lib/store';
+  import { Warp } from '$lib/warp/warp';
   import { onMount } from 'svelte';
   onMount(async () => {
+    const warp = new Warp();
+    await warp.init();
   });
 </script>
 
