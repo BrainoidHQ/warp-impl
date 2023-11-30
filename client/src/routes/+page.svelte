@@ -3,8 +3,13 @@
   import { Warp } from '$lib/warp/warp';
   import { onMount } from 'svelte';
   onMount(async () => {
-    const warp = new Warp();
-    await warp.init();
+    try {
+      const warp = new Warp();
+      await warp.init();
+    } catch (e) {
+      console.log('something went wrong');
+      console.error(e);
+    }
   });
 </script>
 

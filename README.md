@@ -1,7 +1,7 @@
-# Warp Impl
-Implementation of [Warp](https://datatracker.ietf.org/doc/draft-lcurley-warp/) Streaming Protocol.
+# MOQT Impl
+Implementation of [Media over QUIC Transport](https://datatracker.ietf.org/doc/draft-ietf-moq-transport/) Streaming Protocol.
 ## Server
-- Generate certificate stuff as TLS is required on QUIC Connection
+- Generating TLS 1.3 Certificate is required on QUIC Connection
 ```bash
 #at the root dir
 cd ./cert
@@ -13,6 +13,11 @@ mkcert -ecdsa -cert-file certificate.pem -key-file certificate.key localhost 127
 #at the root dir
 python ./server/main.py ./cert/certificate.pem ./cert/certificate.key
 ```
+
+### Media over QUIC Transport
+in ./server/moqt
+
+Interface definition and Encoder/Decoder (not yet implemented) of draft-ietf-moq-transport-01 in Python
 
 ## Client
 ```bash
